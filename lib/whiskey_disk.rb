@@ -48,6 +48,14 @@ class WhiskeyDisk
 
     true
   end
+
+  def post_setup_rake_tasks_disabled?
+    !!setting(:post_setup_rake_tasks_disabled) && setting(:post_setup_rake_tasks_disabled) == 'yes'
+  end
+
+  def post_deploy_rake_tasks_disabled?
+    !!setting(:post_deploy_rake_tasks_disabled) && setting(:post_deploy_rake_tasks_disabled) == 'yes'
+  end
   
   def has_config_repo?
     ! (setting(:config_repository).nil? or setting(:config_repository) == '')
@@ -312,12 +320,12 @@ class WhiskeyDisk
   def run_post_setup_hooks
     needs(:deploy_to)
     run_script(setting(:post_setup_script))
-    run_rake_task(setting(:deploy_to), "deploy:post_setup")
+    run_rake_task(setting(:deploy_to), "deploy:post_setup") unless post_setup_rake_tasks_disabled?
   end
   
   def run_post_deploy_hooks
     needs(:deploy_to)
     run_script(setting(:post_deploy_script))
-    run_rake_task(setting(:deploy_to), "deploy:post_deploy")
+    run_rake_task(setting(:deploy_to), "deploy:post_deploy") unless post_deploy_rake_tasks_disabled?
   end
 end
